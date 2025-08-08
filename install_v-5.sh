@@ -435,6 +435,8 @@ echo "✅ Python environment setup complete"
 
 # Step 6: Setup system service
 echo "⚙️  Step 6/6: Setting up system service..."
+
+# Create service file with proper escaping
 sudo tee /etc/systemd/system/family-center.service > /dev/null << EOF
 [Unit]
 Description=Family Center Application
@@ -453,8 +455,9 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
 
+# Reload systemd and enable service
 sudo systemctl daemon-reload
-sudo systemctl enable family-center
+sudo systemctl enable family-center.service
 
 # Setup basic firewall
 echo "🔒 Configuring security..."
