@@ -435,7 +435,7 @@ echo "✅ Python environment setup complete"
 
 # Step 6: Setup system service
 echo "⚙️  Step 6/6: Setting up system service..."
-sudo tee /etc/systemd/system/family-center.service > /dev/null << SERVICEEOF
+sudo tee /etc/systemd/system/family-center.service > /dev/null << EOF
 [Unit]
 Description=Family Center Application
 After=network.target
@@ -451,7 +451,7 @@ RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
-SERVICEEOF
+EOF
 
 sudo systemctl daemon-reload
 sudo systemctl enable family-center
