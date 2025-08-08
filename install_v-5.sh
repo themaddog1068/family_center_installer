@@ -102,7 +102,7 @@ sudo apt install -y -qq \
 
 # Step 3: Create Family Center directory structure
 echo "📁 Step 3/6: Setting up Family Center application..."
-cd /home/pi
+cd /home/$USER
 
 if [ -d "family_center" ]; then
     echo "📁 Found existing Family Center installation"
@@ -442,10 +442,10 @@ After=network.target
 
 [Service]
 Type=simple
-User=pi
-WorkingDirectory=/home/pi/family_center
-Environment=PATH=/home/pi/family_center/venv/bin
-ExecStart=/home/pi/family_center/venv/bin/python src/main.py
+User=$USER
+WorkingDirectory=/home/$USER/family_center
+Environment=PATH=/home/$USER/family_center/venv/bin
+ExecStart=/home/$USER/family_center/venv/bin/python src/main.py
 Restart=always
 RestartSec=10
 
@@ -475,7 +475,7 @@ echo "🌐 Your Family Center is ready! Access it at:"
 echo "   http://$PI_IP:8080/config"
 echo ""
 echo "🚀 Quick Start Commands:"
-echo "   • Test web UI:     cd /home/pi/family_center && source venv/bin/activate && python3 src/main.py --web-only"
+echo "   • Test web UI:     cd /home/$USER/family_center && source venv/bin/activate && python3 src/main.py --web-only"
 echo "   • Start service:   sudo systemctl start family-center"
 echo "   • Check status:    sudo systemctl status family-center"
 echo "   • View logs:       sudo journalctl -u family-center -f"
