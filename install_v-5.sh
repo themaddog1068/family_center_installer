@@ -123,7 +123,7 @@ mkdir -p downloads logs credentials
 echo "📝 Step 4/6: Creating application files..."
 
 # Create requirements.txt
-cat > requirements.txt << 'REQEOF'
+cat > requirements.txt << 'EOF'
 flask==2.3.3
 requests==2.31.0
 pillow==10.0.1
@@ -139,10 +139,10 @@ schedule==1.2.0
 beautifulsoup4==4.12.2
 lxml==4.9.3
 feedparser==6.0.10
-REQEOF
+EOF
 
 # Create main.py
-cat > src/main.py << 'MAINEOF'
+cat > src/main.py << 'EOF'
 #!/usr/bin/env python3
 """
 Family Center - Digital Photo Frame and Family Dashboard
@@ -213,10 +213,10 @@ def main():
 
 if __name__ == "__main__":
     main()
-MAINEOF
+EOF
 
 # Create config manager
-cat > src/utils/config_manager.py << 'CONFIGEOF'
+cat > src/utils/config_manager.py << 'EOF'
 """Configuration management for Family Center"""
 
 import yaml
@@ -281,10 +281,10 @@ class ConfigManager:
             else:
                 return default
         return value
-CONFIGEOF
+EOF
 
 # Create web interface
-cat > src/modules/web_interface.py << 'WEBEOF'
+cat > src/modules/web_interface.py << 'EOF'
 """Web interface for Family Center"""
 
 from flask import Flask, render_template, request, jsonify
@@ -337,10 +337,10 @@ class WebInterface:
         
         self.logger.info(f"Starting web interface on {host}:{port}")
         self.app.run(host=host, port=port, debug=debug)
-WEBEOF
+EOF
 
 # Create other module stubs
-cat > src/modules/photo_manager.py << 'PHOTOEOF'
+cat > src/modules/photo_manager.py << 'EOF'
 """Photo management for Family Center"""
 
 class PhotoManager:
@@ -354,9 +354,9 @@ class PhotoManager:
     def get_next_photo(self):
         """Get next photo for slideshow"""
         pass
-PHOTOEOF
+EOF
 
-cat > src/modules/weather_service.py << 'WEATHEREOF'
+cat > src/modules/weather_service.py << 'EOF'
 """Weather service for Family Center"""
 
 class WeatherService:
@@ -366,9 +366,9 @@ class WeatherService:
     def get_current_weather(self):
         """Get current weather information"""
         pass
-WEATHEREOF
+EOF
 
-cat > src/modules/news_service.py << 'NEWSEOF'
+cat > src/modules/news_service.py << 'EOF'
 """News service for Family Center"""
 
 class NewsService:
@@ -378,9 +378,9 @@ class NewsService:
     def get_news(self):
         """Get latest news"""
         pass
-NEWSEOF
+EOF
 
-cat > src/modules/calendar_service.py << 'CALEOF'
+cat > src/modules/calendar_service.py << 'EOF'
 """Calendar service for Family Center"""
 
 class CalendarService:
@@ -390,7 +390,7 @@ class CalendarService:
     def get_events(self):
         """Get calendar events"""
         pass
-CALEOF
+EOF
 
 # Create __init__.py files
 touch src/__init__.py
@@ -398,7 +398,7 @@ touch src/modules/__init__.py
 touch src/utils/__init__.py
 
 # Create default config
-cat > src/config/config.yaml << 'YAMLEOF'
+cat > src/config/config.yaml << 'EOF'
 # Family Center Configuration
 web:
   host: 0.0.0.0
@@ -423,7 +423,7 @@ weather:
 news:
   sources: [bbc, reuters]
   update_interval: 30
-YAMLEOF
+EOF
 
 # Step 5: Setup Python environment
 echo "🐍 Step 5/6: Setting up Python environment..."
