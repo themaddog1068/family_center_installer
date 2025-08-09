@@ -287,7 +287,7 @@ EOF
 cat > src/modules/web_interface.py << 'EOF'
 """Web interface for Family Center"""
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, jsonify, render_template_string
 import logging
 
 class WebInterface:
@@ -302,32 +302,137 @@ class WebInterface:
         
         @self.app.route('/')
         def index():
-            return render_template('index.html')
+            return render_template_string('''
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Family Center</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+                    .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    .status { background: #e8f5e8; padding: 20px; border-radius: 5px; border-left: 4px solid #4CAF50; }
+                    .warning { background: #fff3cd; padding: 20px; border-radius: 5px; border-left: 4px solid #ffc107; }
+                    h1 { color: #333; }
+                    a { color: #007bff; text-decoration: none; }
+                    a:hover { text-decoration: underline; }
+                    ul, ol { line-height: 1.6; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>🍓 Family Center - Version -5 (Pre-Alpha)</h1>
+                    <div class="status">
+                        <h2>✅ Installation Successful!</h2>
+                        <p>Your Family Center is running and ready for configuration.</p>
+                    </div>
+                    
+                    <div class="warning">
+                        <h3>⚠️ Pre-Alpha Notice</h3>
+                        <p>This is a pre-alpha release with basic framework functionality. Full features are still in development.</p>
+                    </div>
+                    
+                    <h3>🔗 Quick Links:</h3>
+                    <ul>
+                        <li><a href="/config">📋 Configuration</a></li>
+                        <li><a href="/api/status">🔍 API Status</a></li>
+                        <li><a href="/api/config">⚙️ Configuration API</a></li>
+                    </ul>
+                    
+                    <h3>📋 Next Steps:</h3>
+                    <ol>
+                        <li>Add Google Drive credentials to the <code>credentials/</code> folder</li>
+                        <li>Configure your settings through the configuration panel</li>
+                        <li>Start customizing your Family Center!</li>
+                    </ol>
+                    
+                    <h3>🛠️ System Information:</h3>
+                    <ul>
+                        <li><strong>Version:</strong> -5 (Pre-Alpha)</li>
+                        <li><strong>Status:</strong> Running</li>
+                        <li><strong>Port:</strong> 8080</li>
+                        <li><strong>Installation:</strong> Self-contained</li>
+                    </ul>
+                </div>
+            </body>
+            </html>
+            ''')
         
         @self.app.route('/config')
         def config_page():
-            return render_template('config.html', config=self.config.config)
+            return render_template_string('''
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Family Center Configuration</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+                    .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; border: 1px solid #e9ecef; }
+                    .info { background: #d1ecf1; padding: 15px; border-radius: 5px; border-left: 4px solid #bee5eb; }
+                    a { color: #007bff; text-decoration: none; }
+                    a:hover { text-decoration: underline; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>🛠️ Family Center Configuration</h1>
+                    
+                    <div class="info">
+                        <p><strong>Note:</strong> This is a pre-alpha version. The configuration interface is in development.</p>
+                    </div>
+                    
+                    <h3>Current Configuration:</h3>
+                    <pre>{{ config | safe }}</pre>
+                    
+                    <h3>🔧 Manual Configuration:</h3>
+                    <p>For now, you can manually edit the configuration file:</p>
+                    <pre><code>/home/$USER/family_center/src/config/config.yaml</code></pre>
+                    
+                    <h3>📂 Configuration Directories:</h3>
+                    <ul>
+                        <li><strong>Credentials:</strong> <code>/home/$USER/family_center/credentials/</code></li>
+                        <li><strong>Media:</strong> <code>/home/$USER/family_center/media/</code></li>
+                        <li><strong>Logs:</strong> <code>/home/$USER/family_center/logs/</code></li>
+                    </ul>
+                    
+                    <p><a href="/">← Back to Home</a></p>
+                </div>
+            </body>
+            </html>
+            ''', config=self._format_config(self.config.config))
         
-        @self.app.route('/api/config', methods=['GET', 'POST'])
+        @self.app.route('/api/config', methods=['GET'])
         def api_config():
-            if request.method == 'POST':
-                data = request.json
-                # Update config logic here
-                return jsonify({'status': 'success'})
             return jsonify(self.config.config)
         
         @self.app.route('/api/status')
         def api_status():
             return jsonify({
                 'status': 'running',
-                'version': '5.0',
+                'version': '-5 (Pre-Alpha)',
+                'installation_type': 'self-contained',
                 'services': {
-                    'photos': 'ready',
-                    'weather': 'ready',
-                    'news': 'ready',
-                    'calendar': 'ready'
+                    'web': 'active',
+                    'photos': 'framework-ready',
+                    'weather': 'framework-ready',
+                    'news': 'framework-ready',
+                    'calendar': 'framework-ready'
+                },
+                'endpoints': {
+                    'home': '/',
+                    'config': '/config',
+                    'api_status': '/api/status',
+                    'api_config': '/api/config'
                 }
             })
+    
+    def _format_config(self, config):
+        """Format configuration for display"""
+        import yaml
+        try:
+            return yaml.dump(config, default_flow_style=False, indent=2)
+        except:
+            return str(config)
     
     def run(self):
         """Run the web interface"""
@@ -336,7 +441,7 @@ class WebInterface:
         debug = self.config.get('web.debug', False)
         
         self.logger.info(f"Starting web interface on {host}:{port}")
-        self.app.run(host=host, port=port, debug=debug)
+        self.app.run(host=host, port=port, debug=debug, use_reloader=False)
 EOF
 
 # Create other module stubs
