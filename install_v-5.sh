@@ -566,11 +566,12 @@ sudo systemctl enable family-center.service
 
 # Setup basic firewall
 echo "🔒 Configuring security..."
-sudo ufw default deny incoming -q
-sudo ufw default allow outgoing -q
-sudo ufw allow ssh -q
-sudo ufw allow 8080 -q
-sudo ufw --force enable -q
+sudo ufw --force reset
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw allow 8080/tcp
+sudo ufw --force enable
 
 # Get IP address
 PI_IP=$(hostname -I | awk '{print $1}')
