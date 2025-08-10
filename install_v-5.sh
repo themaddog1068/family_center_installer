@@ -445,7 +445,14 @@ echo "   ✅ Self-contained installation (no external repository needed)"
 echo "   ✅ Embedded application files"
 echo "   ✅ Simplified setup process"
 echo "   ✅ Faster installation time"
-echo "   ⚠️  Pre-alpha release - basic framework only" """Enhanced Web interface for Family Center with credential management"""
+echo "   ⚠️  Pre-alpha release - basic framework only"
+echo ""
+echo "🎨 Enhanced Web interface with credential management"
+echo ""
+
+# Create enhanced web interface with full configuration management
+cat > src/modules/web_interface.py << 'EOF'
+"""Enhanced Web interface for Family Center with credential management"""
 
 from flask import Flask, jsonify, render_template_string, request, redirect, url_for, flash
 import logging
