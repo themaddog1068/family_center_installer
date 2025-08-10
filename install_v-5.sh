@@ -1022,7 +1022,8 @@ class WebInterface:
         debug = self.config.get("web.debug", False)
 
         self.logger.info(f"Starting enhanced web interface on {host}:{port}")
-        self.app.run(host=host, port=port, debug=debug, use_reloader=False) EOF
+        self.app.run(host=host, port=port, debug=debug, use_reloader=False)
+EOF
 
 # Create config manager
 cat > config_manager.py << 'EOF'
@@ -1176,4 +1177,5 @@ class WebContentService:
 
     def save_targets_to_config(self) -> None:
         """Save targets to configuration (simplified)."""
-        logger.info("Would save targets to configuration") EOF
+        logger.info("Would save targets to configuration")
+EOF
