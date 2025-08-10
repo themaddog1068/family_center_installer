@@ -123,7 +123,7 @@ mkdir -p downloads logs credentials
 echo "📝 Step 4/6: Creating application files..."
 
 # Create requirements.txt
-cat > requirements.txt << 'EOF'
+cat > requirements.txt << 'REQUIREMENTS_EOF'
 flask==2.3.3
 werkzeug==3.1.3
 requests==2.31.0
@@ -140,10 +140,10 @@ schedule==1.2.0
 beautifulsoup4==4.12.2
 lxml==4.9.3
 feedparser==6.0.10
-EOF
+REQUIREMENTS_EOF
 
 # Create main.py
-cat > src/main.py << 'EOF'
+cat > src/main.py << 'MAIN_EOF'
 #!/usr/bin/env python3
 """
 Family Center - Digital Photo Frame and Family Dashboard
@@ -214,10 +214,10 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
+MAIN_EOF
 
 # Create config manager
-cat > src/utils/config_manager.py << 'EOF'
+cat > src/utils/config_manager.py << 'UTILS_CONFIG_EOF'
 """Configuration management for Family Center"""
 
 import yaml
@@ -282,12 +282,12 @@ class ConfigManager:
             else:
                 return default
         return value
-EOF
+UTILS_CONFIG_EOF
 
 # Create enhanced web interface with full configuration management
 # Create enhanced web interface with full configuration management
 # Create enhanced web interface with full slideshow configuration
-cat > src/modules/web_interface.py << 'EOF'
+cat > src/modules/web_interface.py << 'WEB_INTERFACE_EOF'
 """Enhanced Web interface for Family Center with full slideshow configuration - Simplified Version"""
 
 import json
@@ -1023,10 +1023,10 @@ class WebInterface:
 
         self.logger.info(f"Starting enhanced web interface on {host}:{port}")
         self.app.run(host=host, port=port, debug=debug, use_reloader=False)
-EOF
+WEB_INTERFACE_EOF
 
 # Create config manager
-cat > config_manager.py << 'EOF'
+cat > config_manager.py << 'CONFIG_MANAGER_EOF'
 """Configuration manager for the Family Center application."""
 
 import os
@@ -1117,10 +1117,10 @@ class ConfigManager:
         """Replace the current config dict and validate it."""
         self.config = new_config
         self._validate_config()
-EOF
+CONFIG_MANAGER_EOF
 
 # Create simplified web content service
-cat > simple_web_content_service.py << 'EOF'
+cat > simple_web_content_service.py << 'WEB_CONTENT_EOF'
 """Simplified Web Content Service for Family Center Installer"""
 
 import logging
@@ -1178,4 +1178,4 @@ class WebContentService:
     def save_targets_to_config(self) -> None:
         """Save targets to configuration (simplified)."""
         logger.info("Would save targets to configuration")
-EOF
+WEB_CONTENT_EOF
