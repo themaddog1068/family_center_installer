@@ -175,6 +175,7 @@ Type=simple
 User=pi
 WorkingDirectory=/home/pi/family_center
 Environment=PATH=/home/pi/family_center/venv/bin
+Environment=PYTHONPATH=/home/pi/family_center
 ExecStart=/home/pi/family_center/venv/bin/python src/main.py
 Restart=always
 RestartSec=10

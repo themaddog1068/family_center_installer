@@ -135,6 +135,7 @@ Type=simple
 User=benjaminhodson
 WorkingDirectory=/home/benjaminhodson/family_center
 Environment=PATH=/home/benjaminhodson/family_center/venv/bin
+Environment=PYTHONPATH=/home/benjaminhodson/family_center
 ExecStart=/home/benjaminhodson/family_center/venv/bin/python src/main.py
 Restart=always
 RestartSec=10
