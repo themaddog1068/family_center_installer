@@ -287,171 +287,172 @@ EOF
 # Create enhanced web interface with full configuration management
 # Create enhanced web interface with full configuration management
 cat > src/modules/web_interface.py << 'EOF'
-
-# Create other module stubs
-cat > src/modules/photo_manager.py << 'EOF'
-"""Photo management for Family Center"""
-
-class PhotoManager:
-    def __init__(self, config):
-        self.config = config
+                        <h3>⚙️ Configure Google Drive Settings</h3>
+                        <form action="/update_config" method="post">
+                            <label>Google Drive Folder ID:</label><br>
+                            <input type="text" name="folder_id" placeholder="Enter your Google Drive folder ID" value="{{ config.google_drive.folder_id }}"><br>
+                            <small>Get this from your Google Drive folder URL</small><br><br>
+                            
+                            <label>Credentials File:</label><br>
+                            <select name="credentials_file">
+                                {% for file in cred_files %}
+                                <option value="credentials/{{ file }}" {% if config.google_drive.credentials_file == 'credentials/' + file %}selected{% endif %}>{{ file }}</option>
+                                {% endfor %}
+                            </select><br><br>
+                            
+                            <button type="submit" class="btn btn-success">💾 Save Configuration</button>
+                        </form>
+                    </div>
+                    
+                    <p><a href="/" class="btn">← Back to Home</a></p>
+                </div>
+            </body>
+            </html>
+            ''', cred_files=cred_files, config=self.config.config)
+        
+        @self.app.route('/upload_credentials', methods=['POST'])
+        def upload_credentials():
+            if 'credentials_file' not in request.files:
+                return 'No file uploaded', 400
+            
+            file = request.files['credentials_file']
+            if file.filename == '':
+                return 'No file selected', 400
+            
+            if file and file.filename.endswith('.json'):
+                filename = secure_filename(file.filename)
+                filepath = os.path.join('credentials', filename)
+                file.save(filepath)
+                
+                # Try to validate the JSON
+                try:
+                    with open(filepath, 'r') as f:
+                        json.load(f)
+                    return redirect('/credentials?success=File uploaded successfully!')
+                except json.JSONDecodeError:
+                    os.remove(filepath)
+                    return 'Invalid JSON file', 400
+            
+            return 'Invalid file type', 400
+        
+        @self.app.route('/delete_credential/<filename>')
+        def delete_credential(filename):
+            filepath = os.path.join('credentials', filename)
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            return redirect('/credentials?success=File deleted!')
+        
+        @self.app.route('/update_config', methods=['POST'])
+        def update_config():
+            folder_id = request.form.get('folder_id', '')
+            credentials_file = request.form.get('credentials_file', '')
+            
+            # Update config
+            self.config.config['google_drive']['folder_id'] = folder_id
+            if credentials_file:
+                self.config.config['google_drive']['credentials_file'] = credentials_file
+            
+            # Save config
+            self.config.save_config()
+            
+            return redirect('/credentials?success=Configuration updated!')
+        
+        @self.app.route('/config')
+        def config_page():
+            return render_template_string('''
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Family Center Configuration</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+                    .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    .nav { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+                    .nav a { margin-right: 20px; color: #007bff; text-decoration: none; }
+                    .nav a:hover { text-decoration: underline; }
+                    pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; border: 1px solid #e9ecef; }
+                    .info { background: #d1ecf1; padding: 15px; border-radius: 5px; border-left: 4px solid #bee5eb; }
+                    a { color: #007bff; text-decoration: none; }
+                    a:hover { text-decoration: underline; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>⚙️ Family Center Configuration</h1>
+                    
+                    <div class="nav">
+                        <a href="/">🏠 Home</a>
+                        <a href="/config">⚙️ Configuration</a>
+                        <a href="/credentials">🔑 Credentials</a>
+                        <a href="/api/status">🔍 API Status</a>
+                    </div>
+                    
+                    <div class="info">
+                        <p><strong>Note:</strong> This is a pre-alpha version. For easier configuration, use the <a href="/credentials">Credentials page</a>.</p>
+                    </div>
+                    
+                    <h3>Current Configuration:</h3>
+                    <pre>{{ config | safe }}</pre>
+                    
+                    <h3>🔧 Manual Configuration:</h3>
+                    <p>For advanced users, you can manually edit the configuration file:</p>
+                    <pre><code>/home/benjaminhodson/family_center/src/config/config.yaml</code></pre>
+                    
+                    <h3>📂 Configuration Directories:</h3>
+                    <ul>
+                        <li><strong>Credentials:</strong> <code>/home/benjaminhodson/family_center/credentials/</code></li>
+                        <li><strong>Media:</strong> <code>/home/benjaminhodson/family_center/media/</code></li>
+                        <li><strong>Logs:</strong> <code>/home/benjaminhodson/family_center/logs/</code></li>
+                    </ul>
+                    
+                    <p><a href="/" class="btn">← Back to Home</a></p>
+                </div>
+            </body>
+            </html>
+            ''', config=self._format_config(self.config.config))
+        
+        @self.app.route('/api/config', methods=['GET'])
+        def api_config():
+            return jsonify(self.config.config)
+        
+        @self.app.route('/api/status')
+        def api_status():
+            return jsonify({
+                'status': 'running',
+                'version': '-5 (Pre-Alpha)',
+                'installation_type': 'self-contained',
+                'services': {
+                    'web': 'active',
+                    'photos': 'framework-ready',
+                    'weather': 'framework-ready',
+                    'news': 'framework-ready',
+                    'calendar': 'framework-ready'
+                },
+                'endpoints': {
+                    'home': '/',
+                    'config': '/config',
+                    'credentials': '/credentials',
+                    'api_status': '/api/status',
+                    'api_config': '/api/config'
+                }
+            })
     
-    def load_photos(self):
-        """Load photos from Google Drive"""
-        pass
+    def _format_config(self, config):
+        """Format configuration for display"""
+        try:
+            return yaml.dump(config, default_flow_style=False, indent=2)
+        except:
+            return str(config)
     
-    def get_next_photo(self):
-        """Get next photo for slideshow"""
-        pass
+    def run(self):
+        """Run the web interface"""
+        host = self.config.get('web.host', '0.0.0.0')
+        port = self.config.get('web.port', 8080)
+        debug = self.config.get('web.debug', False)
+        
+        self.logger.info(f"Starting web interface on {host}:{port}")
+        self.app.run(host=host, port=port, debug=debug, use_reloader=False)
 EOF
-
-cat > src/modules/weather_service.py << 'EOF'
-"""Weather service for Family Center"""
-
-class WeatherService:
-    def __init__(self, config):
-        self.config = config
-    
-    def get_current_weather(self):
-        """Get current weather information"""
-        pass
-EOF
-
-cat > src/modules/news_service.py << 'EOF'
-"""News service for Family Center"""
-
-class NewsService:
-    def __init__(self, config):
-        self.config = config
-    
-    def get_news(self):
-        """Get latest news"""
-        pass
-EOF
-
-cat > src/modules/calendar_service.py << 'EOF'
-"""Calendar service for Family Center"""
-
-class CalendarService:
-    def __init__(self, config):
-        self.config = config
-    
-    def get_events(self):
-        """Get calendar events"""
-        pass
-EOF
-
-# Create __init__.py files
-touch src/__init__.py
-touch src/modules/__init__.py
-touch src/utils/__init__.py
-
-# Create default config
-cat > src/config/config.yaml << 'EOF'
-# Family Center Configuration
-web:
-  host: 0.0.0.0
-  port: 8080
-  debug: false
-
-google_drive:
-  credentials_file: credentials/google_drive_credentials.json
-  token_file: credentials/google_drive_token.json
-  folder_id: ""
-
-display:
-  slideshow_interval: 5
-  transition_effect: fade
-  fullscreen: true
-
-weather:
-  api_key: ""
-  location: "London,UK"
-  units: metric
-
-news:
-  sources: [bbc, reuters]
-  update_interval: 30
-EOF
-
-# Step 5: Setup Python environment
-echo "🐍 Step 5/6: Setting up Python environment..."
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip -q
-pip install -r requirements.txt -q
-echo "✅ Python environment setup complete"
-
-# Step 6: Setup system service
-echo "⚙️  Step 6/6: Setting up system service..."
-
-# Create service file with proper escaping
-sudo tee /etc/systemd/system/family-center.service > /dev/null << EOF
-[Unit]
-Description=Family Center Application
-After=network.target
-
-[Service]
-Type=simple
-User=$USER
-WorkingDirectory=/home/$USER/family_center
-Environment=PATH=/home/$USER/family_center/venv/bin
-ExecStart=/home/$USER/family_center/venv/bin/python src/main.py
-Restart=always
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# Reload systemd and enable service
-sudo systemctl daemon-reload
-sudo systemctl enable family-center.service
-
-# Setup basic firewall
-echo "🔒 Configuring security..."
-sudo ufw --force reset
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw allow ssh
-sudo ufw allow 8080/tcp
-sudo ufw --force enable
-
-# Get IP address
-PI_IP=$(hostname -I | awk '{print $1}')
-
-echo ""
-echo "🎉 Installation Complete!"
-echo "========================"
-echo ""
-echo "🌐 Your Family Center is ready! Access it at:"
-echo "   http://$PI_IP:8080/config"
-echo ""
-echo "🚀 Quick Start Commands:"
-echo "   • Test web UI:     cd /home/$USER/family_center && source venv/bin/activate && python3 src/main.py --web-only"
-echo "   • Start service:   sudo systemctl start family-center"
-echo "   • Check status:    sudo systemctl status family-center"
-echo "   • View logs:       sudo journalctl -u family-center -f"
-echo ""
-echo "📋 Next Steps:"
-echo "1. 🔑 Add Google Drive credentials in the credentials/ folder"
-echo "2. ⚙️  Configure settings at http://$PI_IP:8080/config"
-echo "3. 🚀 Start the service: sudo systemctl start family-center"
-echo ""
-echo "🎊 Your Raspberry Pi is now a Family Center!"
-echo ""
-echo "📝 Version -5 (Pre-Alpha) Features:"
-echo "   ✅ Self-contained installation (no external repository needed)"
-echo "   ✅ Embedded application files"
-echo "   ✅ Simplified setup process"
-echo "   ✅ Faster installation time"
-echo "   ⚠️  Pre-alpha release - basic framework only"
-echo ""
-echo "🎨 Enhanced Web interface with credential management"
-echo ""
-
-# Create enhanced web interface with full configuration management
-cat > src/modules/web_interface.py << 'EOF'
 """Enhanced Web interface for Family Center with credential management"""
 
 from flask import Flask, jsonify, render_template_string, request, redirect, url_for, flash
