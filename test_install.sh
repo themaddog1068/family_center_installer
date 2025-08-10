@@ -70,108 +70,56 @@ sudo apt install -y -qq \
     libsdl2-ttf-dev \
     ufw
 
-# Step 3: Check for existing Family Center installation
-echo "📁 Step 3/7: Checking for Family Center installation..."
+# Step 3: Download and extract Family Center package
+echo "📦 Step 3/7: Downloading Family Center package..."
 cd /home/pi
 
-if [ -d "family_center" ]; then
+# Configuration
+FAMILY_CENTER_DIR="/home/pi/family_center"
+PACKAGE_URL="https://raw.githubusercontent.com/themaddog1068/family_center_installer/main/family_center_complete_v6.zip"
+BACKUP_DIR="/home/pi/family_center_backup_$(date +%Y%m%d_%H%M%S)"
+
+# Create backup if existing installation exists
+if [[ -d "$FAMILY_CENTER_DIR" ]]; then
     echo "📁 Found existing Family Center installation"
-    cd family_center
+    echo "🔄 Creating backup at $BACKUP_DIR"
+    mkdir -p "$BACKUP_DIR"
+    cp -r "$FAMILY_CENTER_DIR"/* "$BACKUP_DIR/" 2>/dev/null || true
+    echo "✅ Backup created successfully"
     
-    # Check if it's a git repository
-    if [ -d ".git" ]; then
-        echo "🔄 Updating existing installation..."
-        if git pull -q; then
-            echo "✅ Successfully updated Family Center"
-        else
-            echo "⚠️  Failed to update via git pull"
-            echo "   This might be due to authentication issues with the private repository"
-            echo "   Please ensure you have proper access to the Family Center repository"
-            read -p "Continue with existing files? (y/N): " -n 1 -r
-            echo
-            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-                echo "❌ Installation cancelled. Please check your repository access."
-                exit 1
-            fi
-        fi
-    else
-        echo "📁 Found family_center directory but it's not a git repository"
-        echo "   This might be a manual installation"
-    fi
-else
-    echo "📥 Step 3/7: Setting up Family Center repository..."
-    echo ""
-    echo "🔐 The Family Center repository is private and requires authentication."
-    echo "   You have several options:"
-    echo ""
-    echo "   1. Use SSH key authentication (recommended):"
-    echo "      - Ensure your SSH key is added to your GitHub account"
-    echo "      - The repository will be cloned via SSH"
-    echo ""
-    echo "   2. Use HTTPS with personal access token:"
-    echo "      - Create a personal access token on GitHub"
-    echo "      - Use it when prompted for password"
-    echo ""
-    echo "   3. Manual setup:"
-    echo "      - Clone the repository manually after installation"
-    echo "      - Place it in /home/pi/family_center"
-    echo ""
-    
-    read -p "Choose option (1/2/3): " -n 1 -r
-    echo
-    
-    case $REPLY in
-        1)
-            echo "🔑 Attempting SSH clone..."
-            if git clone -q git@github.com:themaddog1068/family_center.git; then
-                echo "✅ Successfully cloned Family Center via SSH"
-                cd family_center
-            else
-                echo "❌ SSH clone failed. Please ensure:"
-                echo "   - Your SSH key is added to GitHub"
-                echo "   - You have access to the Family Center repository"
-                echo "   - Your SSH agent is running: ssh-add ~/.ssh/id_rsa"
-                exit 1
-            fi
-            ;;
-        2)
-            echo "🔑 Attempting HTTPS clone..."
-            if git clone -q https://github.com/themaddog1068/family_center.git; then
-                echo "✅ Successfully cloned Family Center via HTTPS"
-                cd family_center
-            else
-                echo "❌ HTTPS clone failed. Please ensure:"
-                echo "   - You have a valid personal access token"
-                echo "   - You have access to the Family Center repository"
-                exit 1
-            fi
-            ;;
-        3)
-            echo "📁 Creating directory structure for manual setup..."
-            mkdir -p family_center
-            cd family_center
-            echo "✅ Directory created. Please manually clone the repository here."
-            echo "   Then run this installer again."
-            ;;
-        *)
-            echo "❌ Invalid option. Installation cancelled."
-            exit 1
-            ;;
-    esac
+    # Remove existing installation
+    echo "🗑️  Removing existing installation..."
+    rm -rf "$FAMILY_CENTER_DIR"
 fi
 
-# Step 4: Verify repository structure
-echo "🔍 Step 4/7: Verifying repository structure..."
-if [ ! -f "requirements.txt" ] && [ ! -f "src/main.py" ]; then
-    echo "⚠️  Warning: Repository structure doesn't match expected Family Center layout"
-    echo "   This might be an incomplete or incorrect repository"
-    read -p "Continue anyway? (y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "❌ Installation cancelled. Please check the repository contents."
-        exit 1
-    fi
+# Create new installation directory
+echo "📁 Creating installation directory..."
+mkdir -p "$FAMILY_CENTER_DIR"
+cd "$FAMILY_CENTER_DIR"
+
+# Download and extract package
+echo "📥 Downloading Family Center package..."
+if curl -L -o family_center_complete_v6.zip "$PACKAGE_URL"; then
+    echo "✅ Package downloaded successfully"
+    echo "📦 Extracting package..."
+    unzip -q family_center_complete_v6.zip
+    rm family_center_complete_v6.zip
+    echo "✅ Package extracted successfully"
+else
+    echo "❌ Failed to download package"
+    echo "   Please check your internet connection and try again"
+    exit 1
 fi
+
+# Step 4: Verify package structure
+echo "🔍 Step 4/7: Verifying package structure..."
+if [ ! -f "requirements.txt" ] || [ ! -f "src/main.py" ]; then
+    echo "❌ Error: Package structure doesn't match expected Family Center layout"
+    echo "   This might be an incomplete or corrupted package"
+    echo "   Please try downloading the package again"
+    exit 1
+fi
+echo "✅ Package structure verified successfully"
 
 # Step 5: Setup Python environment
 echo "🐍 Step 5/7: Setting up Python environment..."
@@ -258,10 +206,10 @@ echo "1. 🔑 Add Google Drive credentials in the credentials/ folder"
 echo "2. ⚙️  Configure settings at http://$PI_IP:8080/config"
 echo "3. 🚀 Start the service: sudo systemctl start family-center"
 echo ""
-echo "🔐 Repository Access Notes:"
-echo "   - If you had issues with repository access, ensure you have proper authentication"
-echo "   - For SSH: ssh-add ~/.ssh/id_rsa"
-echo "   - For HTTPS: Use personal access tokens"
+echo "📦 Package Installation Notes:"
+echo "   - Family Center was installed from a self-contained package"
+echo "   - No external repository access required"
+echo "   - All application files are included in the package"
 echo ""
 echo "📚 Need help? Check the documentation at:"
 echo "   https://github.com/themaddog1068/family_center"

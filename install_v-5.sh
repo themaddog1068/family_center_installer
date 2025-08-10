@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 FAMILY_CENTER_DIR="$HOME/family_center"
-PACKAGE_URL="https://raw.githubusercontent.com/themaddog1068/family_center_installer/main/family_center_working_v5.zip"
+PACKAGE_URL="https://raw.githubusercontent.com/themaddog1068/family_center_installer/main/family_center_complete_v6.zip"
 BACKUP_DIR="$HOME/family_center_backup_$(date +%Y%m%d_%H%M%S)"
 
 echo -e "${BLUE}📋 Step 1/6: Checking system requirements...${NC}"

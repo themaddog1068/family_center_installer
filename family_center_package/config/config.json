@@ -1,0 +1,28 @@
+{
+  "slideshow": {
+    "slide_duration": 5,
+    "shuffle": true,
+    "transitions": true,
+    "transition_type": "crossfade",
+    "transition_duration": 1.0,
+    "ease_type": "ease-in-out",
+    "video_playback": true,
+    "time_based_weighting": true,
+    "day_of_week_weighting": true
+  },
+  "folders": {
+    "google_drive_folder_id": "",
+    "local_media_paths": ["media/local_media"],
+    "auto_sync": true,
+    "sync_interval": 3600
+  },
+  "web_interface": {
+    "host": "0.0.0.0",
+    "port": 8080,
+    "debug": false
+  },
+  "system": {
+    "log_level": "INFO",
+    "environment": "production"
+  }
+}
