@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 FAMILY_CENTER_DIR="$HOME/family_center"
-PACKAGE_URL="https://raw.githubusercontent.com/themaddog1068/family_center_installer/main/family_center_enhanced_v5.zip"
+PACKAGE_URL="https://raw.githubusercontent.com/themaddog1068/family_center_installer/main/family_center_enhanced_v5_full.zip"
 BACKUP_DIR="$HOME/family_center_backup_$(date +%Y%m%d_%H%M%S)"
 
 echo -e "${BLUE}📋 Step 1/6: Checking system requirements...${NC}"
@@ -85,8 +85,8 @@ cd "$FAMILY_CENTER_DIR"
 echo -e "${BLUE}📝 Step 4/6: Downloading enhanced Family Center package...${NC}"
 
 # Download the enhanced package
-echo -e "${YELLOW}📥 Downloading Family Center enhanced package...${NC}"
-if curl -L -o family_center_enhanced_v5.zip "$PACKAGE_URL"; then
+echo -e "${YELLOW}📥 Downloading Family Center enhanced package (full version)...${NC}"
+if curl -L -o family_center_enhanced_v5_full.zip "$PACKAGE_URL"; then
     echo -e "${GREEN}✅ Package downloaded successfully${NC}"
 else
     echo -e "${RED}❌ Failed to download package${NC}"
@@ -95,8 +95,8 @@ fi
 
 # Extract the package
 echo -e "${YELLOW}📦 Extracting package...${NC}"
-unzip -q family_center_enhanced_v5.zip
-rm family_center_enhanced_v5.zip
+unzip -q family_center_enhanced_v5_full.zip
+rm family_center_enhanced_v5_full.zip
 
 echo -e "${GREEN}✅ Package extracted successfully${NC}"
 
