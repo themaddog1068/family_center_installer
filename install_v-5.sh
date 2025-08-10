@@ -284,9 +284,168 @@ class ConfigManager:
         return value
 EOF
 
-# Create enhanced web interface with credential management
+# Create enhanced web interface with full configuration management
+# Create enhanced web interface with full configuration management
 cat > src/modules/web_interface.py << 'EOF'
-"""Enhanced Web interface for Family Center with credential management"""
+
+# Create other module stubs
+cat > src/modules/photo_manager.py << 'EOF'
+"""Photo management for Family Center"""
+
+class PhotoManager:
+    def __init__(self, config):
+        self.config = config
+    
+    def load_photos(self):
+        """Load photos from Google Drive"""
+        pass
+    
+    def get_next_photo(self):
+        """Get next photo for slideshow"""
+        pass
+EOF
+
+cat > src/modules/weather_service.py << 'EOF'
+"""Weather service for Family Center"""
+
+class WeatherService:
+    def __init__(self, config):
+        self.config = config
+    
+    def get_current_weather(self):
+        """Get current weather information"""
+        pass
+EOF
+
+cat > src/modules/news_service.py << 'EOF'
+"""News service for Family Center"""
+
+class NewsService:
+    def __init__(self, config):
+        self.config = config
+    
+    def get_news(self):
+        """Get latest news"""
+        pass
+EOF
+
+cat > src/modules/calendar_service.py << 'EOF'
+"""Calendar service for Family Center"""
+
+class CalendarService:
+    def __init__(self, config):
+        self.config = config
+    
+    def get_events(self):
+        """Get calendar events"""
+        pass
+EOF
+
+# Create __init__.py files
+touch src/__init__.py
+touch src/modules/__init__.py
+touch src/utils/__init__.py
+
+# Create default config
+cat > src/config/config.yaml << 'EOF'
+# Family Center Configuration
+web:
+  host: 0.0.0.0
+  port: 8080
+  debug: false
+
+google_drive:
+  credentials_file: credentials/google_drive_credentials.json
+  token_file: credentials/google_drive_token.json
+  folder_id: ""
+
+display:
+  slideshow_interval: 5
+  transition_effect: fade
+  fullscreen: true
+
+weather:
+  api_key: ""
+  location: "London,UK"
+  units: metric
+
+news:
+  sources: [bbc, reuters]
+  update_interval: 30
+EOF
+
+# Step 5: Setup Python environment
+echo "🐍 Step 5/6: Setting up Python environment..."
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip -q
+pip install -r requirements.txt -q
+echo "✅ Python environment setup complete"
+
+# Step 6: Setup system service
+echo "⚙️  Step 6/6: Setting up system service..."
+
+# Create service file with proper escaping
+sudo tee /etc/systemd/system/family-center.service > /dev/null << EOF
+[Unit]
+Description=Family Center Application
+After=network.target
+
+[Service]
+Type=simple
+User=$USER
+WorkingDirectory=/home/$USER/family_center
+Environment=PATH=/home/$USER/family_center/venv/bin
+ExecStart=/home/$USER/family_center/venv/bin/python src/main.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload systemd and enable service
+sudo systemctl daemon-reload
+sudo systemctl enable family-center.service
+
+# Setup basic firewall
+echo "🔒 Configuring security..."
+sudo ufw --force reset
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw allow 8080/tcp
+sudo ufw --force enable
+
+# Get IP address
+PI_IP=$(hostname -I | awk '{print $1}')
+
+echo ""
+echo "🎉 Installation Complete!"
+echo "========================"
+echo ""
+echo "🌐 Your Family Center is ready! Access it at:"
+echo "   http://$PI_IP:8080/config"
+echo ""
+echo "🚀 Quick Start Commands:"
+echo "   • Test web UI:     cd /home/$USER/family_center && source venv/bin/activate && python3 src/main.py --web-only"
+echo "   • Start service:   sudo systemctl start family-center"
+echo "   • Check status:    sudo systemctl status family-center"
+echo "   • View logs:       sudo journalctl -u family-center -f"
+echo ""
+echo "📋 Next Steps:"
+echo "1. 🔑 Add Google Drive credentials in the credentials/ folder"
+echo "2. ⚙️  Configure settings at http://$PI_IP:8080/config"
+echo "3. 🚀 Start the service: sudo systemctl start family-center"
+echo ""
+echo "🎊 Your Raspberry Pi is now a Family Center!"
+echo ""
+echo "📝 Version -5 (Pre-Alpha) Features:"
+echo "   ✅ Self-contained installation (no external repository needed)"
+echo "   ✅ Embedded application files"
+echo "   ✅ Simplified setup process"
+echo "   ✅ Faster installation time"
+echo "   ⚠️  Pre-alpha release - basic framework only" """Enhanced Web interface for Family Center with credential management"""
 
 from flask import Flask, jsonify, render_template_string, request, redirect, url_for, flash
 import logging
@@ -623,162 +782,3 @@ class WebInterface:
         self.logger.info(f"Starting web interface on {host}:{port}")
         self.app.run(host=host, port=port, debug=debug, use_reloader=False)
 EOF
-
-# Create other module stubs
-cat > src/modules/photo_manager.py << 'EOF'
-"""Photo management for Family Center"""
-
-class PhotoManager:
-    def __init__(self, config):
-        self.config = config
-    
-    def load_photos(self):
-        """Load photos from Google Drive"""
-        pass
-    
-    def get_next_photo(self):
-        """Get next photo for slideshow"""
-        pass
-EOF
-
-cat > src/modules/weather_service.py << 'EOF'
-"""Weather service for Family Center"""
-
-class WeatherService:
-    def __init__(self, config):
-        self.config = config
-    
-    def get_current_weather(self):
-        """Get current weather information"""
-        pass
-EOF
-
-cat > src/modules/news_service.py << 'EOF'
-"""News service for Family Center"""
-
-class NewsService:
-    def __init__(self, config):
-        self.config = config
-    
-    def get_news(self):
-        """Get latest news"""
-        pass
-EOF
-
-cat > src/modules/calendar_service.py << 'EOF'
-"""Calendar service for Family Center"""
-
-class CalendarService:
-    def __init__(self, config):
-        self.config = config
-    
-    def get_events(self):
-        """Get calendar events"""
-        pass
-EOF
-
-# Create __init__.py files
-touch src/__init__.py
-touch src/modules/__init__.py
-touch src/utils/__init__.py
-
-# Create default config
-cat > src/config/config.yaml << 'EOF'
-# Family Center Configuration
-web:
-  host: 0.0.0.0
-  port: 8080
-  debug: false
-
-google_drive:
-  credentials_file: credentials/google_drive_credentials.json
-  token_file: credentials/google_drive_token.json
-  folder_id: ""
-
-display:
-  slideshow_interval: 5
-  transition_effect: fade
-  fullscreen: true
-
-weather:
-  api_key: ""
-  location: "London,UK"
-  units: metric
-
-news:
-  sources: [bbc, reuters]
-  update_interval: 30
-EOF
-
-# Step 5: Setup Python environment
-echo "🐍 Step 5/6: Setting up Python environment..."
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip -q
-pip install -r requirements.txt -q
-echo "✅ Python environment setup complete"
-
-# Step 6: Setup system service
-echo "⚙️  Step 6/6: Setting up system service..."
-
-# Create service file with proper escaping
-sudo tee /etc/systemd/system/family-center.service > /dev/null << EOF
-[Unit]
-Description=Family Center Application
-After=network.target
-
-[Service]
-Type=simple
-User=$USER
-WorkingDirectory=/home/$USER/family_center
-Environment=PATH=/home/$USER/family_center/venv/bin
-ExecStart=/home/$USER/family_center/venv/bin/python src/main.py
-Restart=always
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# Reload systemd and enable service
-sudo systemctl daemon-reload
-sudo systemctl enable family-center.service
-
-# Setup basic firewall
-echo "🔒 Configuring security..."
-sudo ufw --force reset
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw allow ssh
-sudo ufw allow 8080/tcp
-sudo ufw --force enable
-
-# Get IP address
-PI_IP=$(hostname -I | awk '{print $1}')
-
-echo ""
-echo "🎉 Installation Complete!"
-echo "========================"
-echo ""
-echo "🌐 Your Family Center is ready! Access it at:"
-echo "   http://$PI_IP:8080/config"
-echo ""
-echo "🚀 Quick Start Commands:"
-echo "   • Test web UI:     cd /home/$USER/family_center && source venv/bin/activate && python3 src/main.py --web-only"
-echo "   • Start service:   sudo systemctl start family-center"
-echo "   • Check status:    sudo systemctl status family-center"
-echo "   • View logs:       sudo journalctl -u family-center -f"
-echo ""
-echo "📋 Next Steps:"
-echo "1. 🔑 Add Google Drive credentials in the credentials/ folder"
-echo "2. ⚙️  Configure settings at http://$PI_IP:8080/config"
-echo "3. 🚀 Start the service: sudo systemctl start family-center"
-echo ""
-echo "🎊 Your Raspberry Pi is now a Family Center!"
-echo ""
-echo "📝 Version -5 (Pre-Alpha) Features:"
-echo "   ✅ Self-contained installation (no external repository needed)"
-echo "   ✅ Embedded application files"
-echo "   ✅ Simplified setup process"
-echo "   ✅ Faster installation time"
-echo "   ⚠️  Pre-alpha release - basic framework only" 
