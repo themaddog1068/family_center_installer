@@ -76,7 +76,7 @@ cd /home/pi
 
 # Configuration
 FAMILY_CENTER_DIR="/home/pi/family_center"
-PACKAGE_URL="https://raw.githubusercontent.com/themaddog1068/family_center_installer/main/family_center_complete_v11.zip"
+PACKAGE_URL="https://raw.githubusercontent.com/themaddog1068/family_center_installer/main/family_center_complete_v12.zip"
 BACKUP_DIR="/home/pi/family_center_backup_$(date +%Y%m%d_%H%M%S)"
 
 # Create backup if existing installation exists
