@@ -104,7 +104,16 @@ if curl -L -o family_center_complete_v6.zip "$PACKAGE_URL"; then
     echo "📦 Extracting package..."
     unzip -q family_center_complete_v6.zip
     rm family_center_complete_v6.zip
-    echo "✅ Package extracted successfully"
+    
+    # Move package contents to the correct location
+    echo "📁 Moving package contents..."
+    if [ -d "family_center_package" ]; then
+        mv family_center_package/* .
+        mv family_center_package/.* . 2>/dev/null || true
+        rmdir family_center_package
+    fi
+    
+    echo "✅ Package extracted and moved successfully"
 else
     echo "❌ Failed to download package"
     echo "   Please check your internet connection and try again"

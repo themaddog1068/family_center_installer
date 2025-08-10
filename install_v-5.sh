@@ -98,7 +98,15 @@ echo -e "${YELLOW}📦 Extracting package...${NC}"
 unzip -q family_center_working_v5.zip
 rm family_center_working_v5.zip
 
-echo -e "${GREEN}✅ Package extracted successfully${NC}"
+# Move package contents to the correct location
+echo -e "${YELLOW}📁 Moving package contents...${NC}"
+if [ -d "family_center_package" ]; then
+    mv family_center_package/* .
+    mv family_center_package/.* . 2>/dev/null || true
+    rmdir family_center_package
+fi
+
+echo -e "${GREEN}✅ Package extracted and moved successfully${NC}"
 
 echo -e "${BLUE}📝 Step 5/6: Setting up Python environment...${NC}"
 
