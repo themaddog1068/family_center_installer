@@ -665,6 +665,78 @@ class WebConfigUI:
                                 <option value="false">No</option>
                             </select>
                         </div>
+                        
+                        <!-- VLC Engine Settings -->
+                        <h4>VLC Engine Settings (Raspberry Pi)</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Network Prevention</label>
+                                <select id="vlc_network_prevention">
+                                    <option value="true">Enabled</option>
+                                    <option value="false">Disabled</option>
+                                </select>
+                                <div class="help-text">Prevent VLC from making external network calls</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Hide Metadata</label>
+                                <select id="vlc_hide_metadata">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                                <div class="help-text">Hide all media metadata overlays</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Hide Filenames</label>
+                                <select id="vlc_hide_filenames">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                                <div class="help-text">Hide filename overlays</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Hide Titles</label>
+                                <select id="vlc_hide_titles">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                                <div class="help-text">Hide video title overlays</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Image Duration (seconds)</label>
+                                <input type="number" id="vlc_image_duration" min="5" max="60" step="1">
+                                <div class="help-text">Duration for image slides</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Fade Duration (seconds)</label>
+                                <input type="number" id="vlc_fade_duration" min="0.5" max="5" step="0.1">
+                                <div class="help-text">Duration of fade transitions</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Fade Alpha</label>
+                                <input type="number" id="vlc_fade_alpha" min="0.1" max="1.0" step="0.1">
+                                <div class="help-text">Fade transition opacity (0.1-1.0)</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Enable Fade In</label>
+                                <select id="vlc_enable_fade_in">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Enable Fade Out</label>
+                            <select id="vlc_enable_fade_out">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -824,6 +896,19 @@ class WebConfigUI:
                     document.getElementById('slideshow_video_enabled').value = cfg.slideshow.video_playback?.enabled || false;
                 }
 
+                // VLC Engine Settings
+                if (cfg.slideshow?.vlc_engine) {
+                    document.getElementById('vlc_network_prevention').value = cfg.slideshow.vlc_engine.network_prevention || true;
+                    document.getElementById('vlc_hide_metadata').value = cfg.slideshow.vlc_engine.hide_metadata || true;
+                    document.getElementById('vlc_hide_filenames').value = cfg.slideshow.vlc_engine.hide_filenames || true;
+                    document.getElementById('vlc_hide_titles').value = cfg.slideshow.vlc_engine.hide_titles || true;
+                    document.getElementById('vlc_image_duration').value = cfg.slideshow.vlc_engine.image_duration || 12;
+                    document.getElementById('vlc_fade_duration').value = cfg.slideshow.vlc_engine.fade_duration || 2.0;
+                    document.getElementById('vlc_fade_alpha').value = cfg.slideshow.vlc_engine.fade_alpha || 0.8;
+                    document.getElementById('vlc_enable_fade_in').value = cfg.slideshow.vlc_engine.enable_fade_in || true;
+                    document.getElementById('vlc_enable_fade_out').value = cfg.slideshow.vlc_engine.enable_fade_out || true;
+                }
+
                 // Weighting
                 if (cfg.slideshow?.weighted_media?.time_based_weighting) {
                     document.getElementById('weighting_enabled').value = cfg.slideshow.weighted_media.time_based_weighting.enabled || false;
@@ -971,6 +1056,7 @@ class WebConfigUI:
                 if (!currentConfig.slideshow.video_playback) currentConfig.slideshow.video_playback = {};
                 if (!currentConfig.slideshow.weighted_media) currentConfig.slideshow.weighted_media = {};
                 if (!currentConfig.slideshow.weighted_media.time_based_weighting) currentConfig.slideshow.weighted_media.time_based_weighting = {};
+                if (!currentConfig.slideshow.vlc_engine) currentConfig.slideshow.vlc_engine = {};
 
                 // Google Drive
                 currentConfig.google_drive.shared_folder_id = document.getElementById('google_drive_shared_folder_id').value;
@@ -1004,6 +1090,17 @@ class WebConfigUI:
                 // Weighting
                 currentConfig.slideshow.weighted_media.time_based_weighting.enabled = document.getElementById('weighting_enabled').value === 'true';
                 currentConfig.slideshow.weighted_media.time_based_weighting.day_of_week_enabled = document.getElementById('weighting_day_of_week_enabled').value === 'true';
+
+                // VLC Engine Settings
+                currentConfig.slideshow.vlc_engine.network_prevention = document.getElementById('vlc_network_prevention').value === 'true';
+                currentConfig.slideshow.vlc_engine.hide_metadata = document.getElementById('vlc_hide_metadata').value === 'true';
+                currentConfig.slideshow.vlc_engine.hide_filenames = document.getElementById('vlc_hide_filenames').value === 'true';
+                currentConfig.slideshow.vlc_engine.hide_titles = document.getElementById('vlc_hide_titles').value === 'true';
+                currentConfig.slideshow.vlc_engine.image_duration = parseInt(document.getElementById('vlc_image_duration').value);
+                currentConfig.slideshow.vlc_engine.fade_duration = parseFloat(document.getElementById('vlc_fade_duration').value);
+                currentConfig.slideshow.vlc_engine.fade_alpha = parseFloat(document.getElementById('vlc_fade_alpha').value);
+                currentConfig.slideshow.vlc_engine.enable_fade_in = document.getElementById('vlc_enable_fade_in').value === 'true';
+                currentConfig.slideshow.vlc_engine.enable_fade_out = document.getElementById('vlc_enable_fade_out').value === 'true';
 
                 // Web Content
                 if (!currentConfig.web_content) currentConfig.web_content = {};
