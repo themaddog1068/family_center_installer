@@ -1,0 +1,148 @@
+google_drive:
+  service_account_file: credentials.json
+  token_path: token.json
+  shared_folder_id: "10_XYSJeZLf9GwTUaCXUwHtGztI4wOtKP"
+  local_media_path: media/remote_drive
+  sync_interval_minutes: 30
+  auto_sync_on_startup: true
+  sync:
+    max_concurrent_downloads: 3
+    retry_attempts: 3
+    retry_delay_seconds: 5
+    include_subfolders: true
+    max_depth: 3
+  file_types:
+    images: [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".heic", ".heif"]
+    videos: [".mp4", ".avi", ".mov", ".wmv", ".mkv", ".webm", ".flv"]
+
+local_sync:
+  enabled: true
+  sources:
+    - path: /path/to/local/media
+      destination: local_media
+      sync_interval_minutes: 15
+      auto_sync_on_startup: true
+    - path: /path/to/another/media
+      destination: another_media
+      sync_interval_minutes: 30
+      auto_sync_on_startup: false
+  preserve_folder_structure: true
+  delete_missing_files: true
+  sync_on_file_change: true
+  max_concurrent_syncs: 2
+
+google_calendar:
+  enabled: true
+  calendar_id: deckhousefamilycenter@gmail.com
+  timezone: America/New_York
+  sync_interval_minutes: 60
+  auto_sync_on_startup: true
+  generate_images: true
+  image_output_folder: media/calendar_views
+  image_width: 1920
+  image_height: 1080
+  generate_monthly_view: true
+  generate_weekly_view: true
+  max_events_per_view: 10
+  calendar_title: DeckHouse Calendar Events
+  use_ical: true
+  ical_url: https://calendar.google.com/calendar/ical/deckhousefamilycenter%40gmail.com/private-e6002ab661aab799ffb4d51c5da77797/basic.ics
+  views:
+    weekly:
+      enabled: true
+      title: "This Week"
+      show_time: true
+      show_all_day: true
+      max_events_per_day: 5
+    sliding_30_days:
+      enabled: true
+      show_time: true
+      show_all_day: true
+      max_events_per_day: 3
+      single_event_font_size: 80
+      multi_event_font_size: 40
+    upcoming:
+      enabled: true
+      show_time: true
+      show_all_day: true
+      max_events: 10
+      days_ahead: 30
+
+slideshow:
+  media_directory: media
+  shuffle_enabled: true
+  slide_duration_seconds: 3
+  # Sprint 3: Enhanced transition and visual settings
+  transitions:
+    enabled: true
+    type: crossfade  # crossfade, fade, none
+    duration_seconds: 1.0
+    ease_type: linear  # linear, ease_in, ease_out, ease_in_out
+  # Sprint 3: Video playback settings
+  video_playback:
+    enabled: true
+    autoplay: true
+    loop_videos: false
+    video_controls: false
+    mute_audio: true
+  # Sprint 3: Date-based media prioritization
+  date_prioritization:
+    enabled: true
+    newer_bias: 0.7  # Weight for newer files (0.0-1.0)
+    days_considered_new: 30  # Files newer than this are considered "new"
+    creation_date_weight: 0.3  # How much to weight by creation date vs random
+  # Sprint 3: Enhanced background settings
+  background:
+    use_complementary_colors: true
+    fallback_color: "#000000"
+    brightness_adjustment: 0.3  # How much to darken/lighten complementary color
+    blur_background: false  # Option to blur enlarged image as background
+  supported_image_formats:
+    - .jpg
+    - .jpeg
+    - .png
+    - .gif
+    - .bmp
+    - .webp
+    - .heic
+    - .heif
+  supported_video_formats:
+    - .mp4
+    - .avi
+    - .mov
+    - .wmv
+    - .mkv
+    - .webm
+    - .flv
+  weighted_media:
+    sources:
+      - folder: media
+        weight: 0.8
+        name: family_photos
+        enabled: true
+      - folder: media/calendar_views
+        weight: 0.2
+        name: calendar
+        enabled: true
+    playlist_size: 20
+    reshuffle_interval: 10
+    strict_weights: true
+
+display:
+  resolution:
+    width: 1920
+    height: 1080
+  fullscreen: true
+  background_color: "#000000"
+
+logging:
+  level: INFO
+  enable_file_logging: true
+  log_file: logs/family_center.log
+  max_log_files: 5
+  max_log_size_mb: 10
+
+api:
+  enable_web_interface: false
+  port: 8080
+  host: localhost

@@ -1,0 +1,597 @@
+api:
+  enable_web_interface: false
+  host: localhost
+  port: 8080
+display:
+  background_color: '#000000'
+  fullscreen: true
+  resolution:
+    height: 1080
+    width: 1920
+google_calendar:
+  auto_sync_on_startup: true
+  calendar_id: deckhousefamilycenter@gmail.com
+  calendar_title: DeckHouse Calendar Events
+  enabled: true
+  generate_images: true
+  generate_monthly_view: true
+  generate_weekly_view: true
+  ical_url: https://calendar.google.com/calendar/ical/deckhousefamilycenter%40gmail.com/private-e6002ab661aab799ffb4d51c5da77797/basic.ics
+  image_height: 1080
+  image_output_folder: media/Calendar
+  image_width: 1920
+  max_events_per_view: 10
+  sync_interval_minutes: 60
+  timezone: America/New_York
+  use_ical: true
+  views:
+    sliding_30_days:
+      enabled: true
+      max_events_per_day: 3
+      multi_event_font_size: 40
+      show_all_day: true
+      show_time: true
+      single_event_font_size: 80
+    upcoming:
+      days_ahead: 30
+      enabled: true
+      max_events: 10
+      show_all_day: true
+      show_time: true
+    weekly:
+      enabled: true
+      max_events_per_day: 5
+      show_all_day: true
+      show_time: true
+      title: This Week
+google_drive:
+  auto_sync_on_startup: true
+  file_types:
+    images:
+    - .jpg
+    - .jpeg
+    - .png
+    - .gif
+    - .bmp
+    - .webp
+    - .heic
+    - .heif
+    videos:
+    - .mp4
+    - .avi
+    - .mov
+    - .wmv
+    - .mkv
+    - .webm
+    - .flv
+  local_media_path: media/remote_drive
+  service_account_file: credentials/service-account.json
+  shared_folder_id: 10_XYSJeZLf9GwTUaCXUwHtGztI4wOtKP
+  sync:
+    include_subfolders: true
+    max_concurrent_downloads: 3
+    max_depth: 3
+    retry_attempts: 3
+    retry_delay_seconds: 5
+  sync_interval_minutes: 30
+  token_path: token.json
+local_sync:
+  delete_missing_files: true
+  enabled: true
+  max_concurrent_syncs: 2
+  preserve_folder_structure: true
+  sources:
+  - auto_sync_on_startup: true
+    destination: local_media
+    path: /path/to/local/media
+    sync_interval_minutes: 15
+  - auto_sync_on_startup: false
+    destination: another_media
+    path: /path/to/another/media
+    sync_interval_minutes: 30
+  sync_on_file_change: true
+logging:
+  enable_file_logging: true
+  level: INFO
+  log_file: logs/family_center.log
+  max_log_files: 5
+  max_log_size_mb: 10
+slideshow:
+  background:
+    blur_background: false
+    brightness_adjustment: 0.3
+    fallback_color: '#000000'
+    use_complementary_colors: true
+  date_prioritization:
+    creation_date_weight: 0.3
+    days_considered_new: 30
+    enabled: false
+    newer_bias: 0.7
+  mat_frame:
+    border_color: '#000000'
+    border_width: 4
+    color: complementary_dark
+    complementary_dark_factor: 0.6
+    enabled: true
+    fallback_mat_color: '#FFFFFF'
+    show_border: true
+    width: 25
+  media_directory: media/remote_drive
+  scaling_mode: fit_within
+  shuffle_enabled: false
+  slide_duration_seconds: 8
+  supported_image_formats:
+  - .jpg
+  - .jpeg
+  - .png
+  - .gif
+  - .bmp
+  - .webp
+  supported_video_formats:
+  - .mp4
+  - .avi
+  - .mov
+  - .wmv
+  - .mkv
+  - .webm
+  - .flv
+  transitions:
+    duration_seconds: 3.5
+    ease_type: ease_in_out
+    enabled: true
+    type: crossfade
+    fade_alpha: 0.9
+    fade_in: true
+    fade_out: true
+  video_playback:
+    autoplay: true
+    enabled: false
+    loop_videos: false
+    mute_audio: false
+    video_controls: false
+
+  weighted_media:
+    sources:
+    - enabled: true
+      folder: media/web_news
+      name: Web News
+      weight: 1.0
+    - enabled: true
+      folder: media/remote_drive
+      name: Family Photos
+      weight: 1.0
+    - enabled: true
+      folder: media/Calendar
+      name: Calendar Events
+      weight: 1.0
+    - enabled: true
+      folder: media/Weather
+      name: Weather Info
+      weight: 1.0
+    strict_weights: true
+    time_based_weighting:
+      daily_time_ranges:
+        '0':
+        - end_hour: 6
+          name: Early Morning (12 AM - 6 AM)
+          start_hour: 0
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 12
+          name: Work Morning (6 AM - 12 PM)
+          start_hour: 6
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 18
+          name: Work Afternoon (12 PM - 6 PM)
+          start_hour: 12
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 24
+          name: Evening (6 PM - 12 AM)
+          start_hour: 18
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        '1':
+        - end_hour: 6
+          name: Early Morning (12 AM - 6 AM)
+          start_hour: 0
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 12
+          name: Work Morning (6 AM - 12 PM)
+          start_hour: 6
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 18
+          name: Work Afternoon (12 PM - 6 PM)
+          start_hour: 12
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 24
+          name: Evening (6 PM - 12 AM)
+          start_hour: 18
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        '2':
+        - end_hour: 6
+          name: Early Morning (12 AM - 6 AM)
+          start_hour: 0
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 12
+          name: Work Morning (6 AM - 12 PM)
+          start_hour: 6
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 18
+          name: Work Afternoon (12 PM - 6 PM)
+          start_hour: 12
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 24
+          name: Evening (6 PM - 12 AM)
+          start_hour: 18
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        '3':
+        - end_hour: 6
+          name: Early Morning (12 AM - 6 AM)
+          start_hour: 0
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 12
+          name: Work Morning (6 AM - 12 PM)
+          start_hour: 6
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 18
+          name: Work Afternoon (12 PM - 6 PM)
+          start_hour: 12
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 24
+          name: Evening (6 PM - 12 AM)
+          start_hour: 18
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        '4':
+        - end_hour: 6
+          name: Early Morning (12 AM - 6 AM)
+          start_hour: 0
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 12
+          name: Work Morning (6 AM - 12 PM)
+          start_hour: 6
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 18
+          name: Work Afternoon (12 PM - 6 PM)
+          start_hour: 12
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 24
+          name: Weekend Evening (6 PM - 12 AM)
+          start_hour: 18
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        '5':
+        - end_hour: 6
+          name: Late Night (12 AM - 6 AM)
+          start_hour: 0
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 12
+          name: Weekend Morning (6 AM - 12 PM)
+          start_hour: 6
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 18
+          name: Weekend Afternoon (12 PM - 6 PM)
+          start_hour: 12
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 24
+          name: Weekend Evening (6 PM - 12 AM)
+          start_hour: 18
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        '6':
+        - end_hour: 6
+          name: Late Night (12 AM - 6 AM)
+          start_hour: 0
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 12
+          name: Sunday Morning (6 AM - 12 PM)
+          start_hour: 6
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 18
+          name: Sunday Afternoon (12 PM - 6 PM)
+          start_hour: 12
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+        - end_hour: 24
+          name: Sunday Evening (6 PM - 12 AM)
+          start_hour: 18
+          weights:
+            calendar: 0.25
+            media: 0.25
+            weather: 0.25
+            web_news: 0.25
+      day_of_week_enabled: true
+      debug_mode: false
+      enabled: true
+      hourly_weights:
+        '0':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '1':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '2':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '3':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '4':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '5':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '6':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '7':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '8':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '9':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '10':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '11':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '12':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '13':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '14':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '15':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '16':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '17':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '18':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '19':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '20':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '21':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '22':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+        '23':
+          calendar: 0.25
+          media: 0.25
+          weather: 0.25
+          web_news: 0.25
+weather:
+  api_key: 0c3196192ee04921124df00728e586c3
+  auto_sync_on_startup: true
+  cleanup_old_files: true
+  country_code: US
+  download_radar: true
+  enabled: true
+  generate_current_weather: true
+  generate_forecast: true
+  image_height: 1080
+  image_width: 1920
+  language: en
+  max_file_age_hours: 24
+  output_folder: media/Weather
+  radar_animation_duration: 2000
+  radar_animation_frames: 6
+  sync_interval_minutes: 60
+  units: imperial
+  zip_code: '03110'
+web_content:
+  auto_sync_on_startup: true
+  browser:
+    headless: true
+    timeout_seconds: 30
+    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+      (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+  cleanup_old_files: true
+  enabled: true
+  image_height: 1080
+  image_width: 1920
+  max_file_age_hours: 24
+  output_folder: media/web_news
+  sync_interval_minutes: 30
+  targets:
+  - enabled: true
+    name: 📰 Local News
+    selector: .main-content, .content-area, main
+    url: https://www.wmur.com/news
+    weight: 0.5
+  - enabled: false
+    name: 🌤️ Weather News
+    selector: .main-content, .content, main
+    url: https://weather.com/news
+    weight: 0.3
+  - enabled: true
+    name: 🎭 Music Hall Events
+    selector: .agenda-content, .events-content, .main-content, main
+    url: https://www.themusichall.org/agenda/
+    weight: 0.8
+  - enabled: true
+    name: 🎬 Now Playing Section
+    selector: body
+    url: https://redrivertheatres.org/
+    weight: 1
+  - enabled: true
+    name: 🎬 Coming Soon Section
+    selector: body
+    url: https://redrivertheatres.org/
+    weight: 1
+  - enabled: true
+    name: 🏛️ Capitol Center Events
+    selector: body
+    url: https://www.ccanh.com/
+    weight: 0.8
+  - enabled: true
+    name: 🎵 Bank NH Pavilion Events
+    selector: body
+    url: https://www.banknhpavilion.com/
+    weight: 0.8
