@@ -437,8 +437,11 @@ class WebConfigUI:
                 # Import and test Google Drive service
                 from src.services.google_drive import GoogleDriveService
 
-                # Use the current config from the config manager
-                config = self.config_manager.get_config()
+                # Create a Config object with the current config data
+                from src.config import Config
+                config = Config()
+                # Override the config data with our current settings
+                config._config_data = self.config_manager.to_dict()
                 google_drive_service = GoogleDriveService(config)
 
                 # Test the connection by listing files
