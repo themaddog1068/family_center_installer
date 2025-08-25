@@ -1,36 +1,57 @@
 """Configuration manager for the Family Center application."""
 
+import json
 import os
+from pathlib import Path
 from typing import Any
 
-import yaml
+from src.config.environment import get_environment_config
 
 
 class ConfigManager:
-    """Manages application configuration loading and validation."""
+    """Manages application configuration loading and validation using JSON files like the original."""
 
-    def __init__(self, config_path: str = "src/config/config.yaml"):
+    def __init__(self, config_path: str = "config/config.json", env: str = None):
         """Initialize the configuration manager.
 
         Args:
-            config_path: Path to the YAML configuration file
+            config_path: Path to the base JSON configuration file
+            env: Optional environment string. If not provided, uses ENV environment variable.
         """
         self.config_path = config_path
+        self.env_config = get_environment_config(env, config_dir=Path("config"))
         self.config: dict[str, Any] = {}
         self.load_config()
 
     def load_config(self) -> None:
-        """Load configuration from YAML file."""
-        try:
-            with open(self.config_path) as f:
-                self.config = yaml.safe_load(f)
-            self._validate_config()
-        except FileNotFoundError as err:
-            raise FileNotFoundError(
-                f"Configuration file not found: {self.config_path}"
-            ) from err
-        except yaml.YAMLError as err:
-            raise ValueError(f"Error parsing YAML configuration: {str(err)}") from err
+        """Load configuration from JSON files, merging default and environment-specific configs."""
+        config_dir = self.env_config.config_dir
+        env = self.env_config.environment.value
+        default_path = config_dir / "config.json"
+        env_path = config_dir / f"config.{env}.json"
+
+        base_config = {}
+        env_config = {}
+
+        if default_path.exists():
+            with open(default_path) as f:
+                base_config = json.load(f)
+        if env_path.exists():
+            with open(env_path) as f:
+                env_config = json.load(f)
+
+        self.config = self._deep_merge(base_config, env_config)
+        self._validate_config()
+
+    def _deep_merge(self, base: dict, override: dict) -> dict:
+        """Recursively merge two dictionaries."""
+        result = base.copy()
+        for k, v in override.items():
+            if k in result and isinstance(result[k], dict) and isinstance(v, dict):
+                result[k] = self._deep_merge(result[k], v)
+            else:
+                result[k] = v
+        return result
 
     def _validate_config(self) -> None:
         """Validate the loaded configuration."""
@@ -44,26 +65,25 @@ class ConfigManager:
         if not os.path.exists(media_path):
             os.makedirs(media_path, exist_ok=True)
 
-    def get(self, section: str, key: str | None = None) -> Any:
-        """Get configuration value.
+    def get(self, key: str, default: Any = None) -> Any:
+        """
+        Get configuration value. Supports nested keys using dot notation.
 
         Args:
-            section: Configuration section name
-            key: Optional key within the section
+            key: Configuration key (supports dot notation for nested keys)
+            default: Default value if key is not found
 
         Returns:
-            Configuration value or section
+            Configuration value or default
         """
-        if section not in self.config:
-            raise KeyError(f"Configuration section not found: {section}")
-
-        if key is None:
-            return self.config[section]
-
-        if key not in self.config[section]:
-            raise KeyError(f"Configuration key not found: {section}.{key}")
-
-        return self.config[section][key]
+        keys = key.split(".")
+        value = self.config
+        for k in keys:
+            if isinstance(value, dict) and k in value:
+                value = value[k]
+            else:
+                return default
+        return value
 
     def reload(self) -> None:
         """Reload configuration from file."""
@@ -78,11 +98,9 @@ class ConfigManager:
         return self.config
 
     def save_config(self) -> None:
-        """Save the current configuration to the YAML file."""
-        import yaml
-
+        """Save the current configuration to the JSON file."""
         with open(self.config_path, "w") as f:
-            yaml.safe_dump(self.config, f, sort_keys=False, allow_unicode=True)
+            json.dump(self.config, f, indent=2, sort_keys=False)
 
     def set_config(self, new_config: dict[str, Any]) -> None:
         """Replace the current config dict and validate it."""
