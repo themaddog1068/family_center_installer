@@ -404,7 +404,7 @@ class WebConfigUI:
                 config = self.config_manager.to_dict()
                 if "google_drive" not in config:
                     config["google_drive"] = {}
-                config["google_drive"]["credentials_file"] = credentials_path
+                config["google_drive"]["service_account_file"] = credentials_path
                 self.config_manager.set_config(config)
                 self.config_manager.save_config()
 
@@ -911,7 +911,7 @@ class WebConfigUI:
                     document.getElementById('google_drive_local_media_path').value = cfg.google_drive.local_media_path || '';
                     document.getElementById('google_drive_sync_interval_minutes').value = cfg.google_drive.sync_interval_minutes || 30;
                     document.getElementById('google_drive_auto_sync_on_startup').value = cfg.google_drive.auto_sync_on_startup || false;
-                    document.getElementById('google_drive_credentials_path').value = cfg.google_drive.credentials_file || 'credentials/service-account.json';
+                    document.getElementById('google_drive_credentials_path').value = cfg.google_drive.service_account_file || 'credentials/service-account.json';
                 }
 
                 // Calendar
